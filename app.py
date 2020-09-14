@@ -1,7 +1,7 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-from linioCat.spiders.spider import LinioCat
+from linioCat.spiders.spider_dos import LinioCat
 
 if __name__ == '__main__':
 	process = CrawlerProcess(get_project_settings())

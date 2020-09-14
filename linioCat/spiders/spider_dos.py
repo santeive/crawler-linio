@@ -1,11 +1,11 @@
 import scrapy
-from scrapy.linkextractors import LinkExtractor
-import csv
 import time
 import json
-import calendar
 from datetime import datetime, date
 from ..items import LiniocatItem
+
+from scrapy.loader import ItemLoader
+from scrapers.items import ProductItem
 
 import requests
 import os
@@ -87,7 +87,6 @@ def downloadUrl(listNames):
 			link = r.text
 			listUrl.append(link)
 		
-		#Imprimimos la longitud de los items
 	return listUrl
 
 def main():
@@ -106,78 +105,42 @@ def main():
 class LinioCat(scrapy.Spider):
 	name = 'liniobench'
 	allowed_domains = ["www.linio.com.mx"]	
-	#Corremos así
-	# scrapy crawl liniobench -o linioItemsFinal.csv -t csv
 
-	#Vamos a seguir a este link
-	#//div[@class="catalogue-list"]/ul/li/a/@href
 	def start_requests(self):
 
 		urls = main()
 		for i in urls:
-			yield scrapy.Request(url=i, callback=self.parse_dir_contents)
+			yield scrapy.Request(url=i, callback=self.parse_dir_contents, meta={'url':i})
 
-
-		#Mandar mensaje de 'TERMINAMOS'
-		
-
-	#Funcion que hace click en el link dada una página (2)
 	def parse_dir_contents(self, response):
-		#Next page
-		items = LiniocatItem()
+		loader = ItemLoader(item=LiniocatItem(), response=response)
 
-		#Info del producto
+		#Extract from datalayer
 		data = re.findall("var dataLayer =(.+?);\n", response.body.decode("utf-8"), re.S)
-		# print("Esto es lo que tengo")
-		# print(data)
+		
+		descripcion = response.xpath('normalize-space(//div[@itemprop="description"] )').extract()
+		porcentaje = response.xpath('(//span[@class="discount"])[last()]/text()').extract()
+		stock = response.xpath('normalize-space(//button[@id="buy-now"][1]/text())').extract()
+		months = response.xpath('normalize-space(//*[@id="usp-menu"]/div/div/a[5]/span[2]/text())').extract()
 
-		# print("")
 		ls = []
 		if data:
 			ls = json.loads(data[0])
+
+		loader.add_value("sku", ls[0]["sku_config"])
+		loader.add_value("name", ls[0]["product_name"])
+		loader.add_value("category", ls[0]["category_full"])
+		loader.add_value("seller", ls[0]["seller_name"])
+		loader.add_value("description", descripcion)
+		loader.add_value("brand", ls[0]["brand"])
+		loader.add_value("image", ls[0]["small_image"])
 		
-		if ls:
-			# Info del producto
-			nombre    = ls[0]["product_name"]
-			original  = ls[0]["price"]
-			descuento = ls[0]["special_price"]
-			categoria = ls[0]["category_full"] 
-			sku 	  = ls[0]["sku_config"]
-			marca 	  = ls[0]["brand"]
-			vendedor  = ls[0]["seller_name"]
+		loader.add_value("months", months)
+		loader.add_value("link", response.meta.get('url'))
+		loader.add_value("stock", stock)
+		loader.add_value("discount", ls[0]["special_price"])
+		loader.add_value("price", ls[0]["price"])
+		loader.add_value("percentage", porcentaje)
+		loader.add_value("date", getFecha())
 
-			porcentaje = response.xpath('(//span[@class="discount"])[last()]/text()').extract()
-			if len(porcentaje) == 0:
-				porcentaje = "No aplica"
-
-			envio = response.xpath('//div[@class="item-shipping-estimate-title"]/text()').extract()
-			if len(envio) == 0:
-				envio = "No aplica"
-
-			status = response.xpath('normalize-space(//button[@id="buy-now"][1]/text())').extract()
-			if status == "Añadir al carrito":
-				status = "Disponible"
-			meses = response.xpath('normalize-space(//*[@id="usp-menu"]/div/div/a[5]/span[2]/text())').extract()
-			descripcion = response.xpath('normalize-space(//div[@itemprop="description"] )').extract()
-			url = response.xpath('//link[@rel="canonical"]/@href').extract()
-			fecha = getFecha()
-
-			items['sku']  = sku
-			items['nombre'] = nombre
-			items['original'] = original
-			items['descuento'] = descuento
-			items['porcentaje'] = porcentaje
-			items['categoria'] = categoria
-			items['marca'] = marca
-			items['vendedor'] = vendedor
-			items['status'] = status
-			items['meses'] = meses
-			items['descripcion'] = descripcion
-			items['envio'] = envio
-			items['link'] = url
-			items['fecha'] = fecha
-
-			yield items
-
-			
-
+		return loader.load_item()
