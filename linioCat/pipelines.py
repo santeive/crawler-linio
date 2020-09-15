@@ -26,7 +26,7 @@ class LiniocatPipeline(object):
 		
 		self.file = open(fileName, 'wb')
 		self.exporter = CsvItemExporter(self.file, str)
-		self.exporter.fields_to_export = ["sku", "nombre", "original", "descuento", "porcentaje", "marca", "vendedor", "categoria", "status", "meses", "descripcion", "envio", "link", "fecha"]
+		self.exporter.fields_to_export = ["sku", "name", "price", "discount", "percentage", "brand", "seller", "category", "stock", "description", "link", "date"]
 		self.exporter.start_exporting()
 
 	def close_spider(self, spider):

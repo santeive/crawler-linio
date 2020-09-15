@@ -13,10 +13,21 @@ def clean_stock(stock):
 def clean_description(descripcion):
     return descripcion
 
+def clean_category(clean_category):
+    clean_category = clean_category.replace('/','|')
+    return clean_category
+
 def clean_percentage(porcentaje):
     if len(porcentaje) == 0:
         porcentaje = "No aplica"
+    else:
+        porcentaje = re.findall(r'\d{1,3}', porcentaje)
     return porcentaje
+
+def clean_image(image):
+    image = 'http:'+ image
+    return image
+
 
 
 class LiniocatItem(scrapy.Item):
@@ -28,28 +39,29 @@ class LiniocatItem(scrapy.Item):
     name = scrapy.Field(
         output_processor=TakeFirst()
     )
-
     category = scrapy.Field(
+        input_processor=MapCompose(clean_category),
         output_processor=TakeFirst()
     )
     seller = scrapy.Field(
         output_processor=TakeFirst()
     )
-    description = scrapy.Field()
-
+    description = scrapy.Field(
+        input_processor=MapCompose(clean_description),
+        output_processor=TakeFirst()
+    )
     brand = scrapy.Field(
         output_processor=TakeFirst()
     )
     image = scrapy.Field(
-        output_processor=TakeFirst()
-    )
-    months = scrapy.Field(
+        input_processor=MapCompose(clean_image),
         output_processor=TakeFirst()
     )
     link = scrapy.Field(
         output_processor=TakeFirst()
     )
     stock = scrapy.Field(
+        input_processor=MapCompose(clean_stock),
         output_processor=TakeFirst()
     )
     discount = scrapy.Field(
@@ -59,6 +71,7 @@ class LiniocatItem(scrapy.Item):
         output_processor=TakeFirst()
     )
     percentage = scrapy.Field(
+        input_processor=MapCompose(clean_percentage),
         output_processor=TakeFirst()
     )
     date = scrapy.Field(

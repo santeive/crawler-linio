@@ -3,9 +3,8 @@ import time
 import json
 from datetime import datetime, date
 from ..items import LiniocatItem
-
 from scrapy.loader import ItemLoader
-from scrapers.items import ProductItem
+
 
 import requests
 import os
@@ -108,7 +107,15 @@ class LinioCat(scrapy.Spider):
 
 	def start_requests(self):
 
-		urls = main()
+		#urls = main()
+		urls = ['https://www.linio.com.mx/p/blusa-vuelos-sybilla-para-mujer-blanco-wxxiqn?qid=9954105824be55ad74f5140b5e7e400c&oid=SY592FA0AQ7XPLAMX&position=1&sku=SY592FA0AQ7XPLAMX',
+				'https://www.linio.com.mx/p/blusa-satinada-estampada-university-club-para-mujer-multicolor-ot093p?qid=9954105824be55ad74f5140b5e7e400c&oid=UN007FA0ZSKI5LAMX&position=2&sku=UN007FA0ZSKI5LAMX',
+				'https://www.linio.com.mx/p/blusa-manga-larga-university-mujer-multicolor-qbttns?qid=9954105824be55ad74f5140b5e7e400c&oid=UN007FA0Z0QVTLAMX&position=3&sku=UN007FA0Z0QVTLAMX',
+				'https://www.linio.com.mx/p/blusa-sin-mangas-macrame-university-club-para-mujer-azul-qgjllh?qid=9954105824be55ad74f5140b5e7e400c&oid=UN007FA0TU8GDLAMX&position=4&sku=UN007FA0TU8GDLAMX',
+				'https://www.linio.com.mx/p/blusa-manga-larga-university-mujer-azul-rzd65k?qid=9954105824be55ad74f5140b5e7e400c&oid=UN007FA0T2EU1LAMX&position=5&sku=UN007FA0T2EU1LAMX',
+				'https://www.linio.com.mx/p/blusa-manga-larga-university-mujer-turquesa-tmwinc?qid=9954105824be55ad74f5140b5e7e400c&oid=UN007FA0N42S9LAMX&position=6&sku=UN007FA0N42S9LAMX',
+				'https://www.linio.com.mx/p/blusa-bordada-university-club-para-mujer-blanco-tr0uz9?qid=9954105824be55ad74f5140b5e7e400c&oid=UN007FA0IIZYLLAMX&position=7&sku=UN007FA0IIZYLLAMX']
+
 		for i in urls:
 			yield scrapy.Request(url=i, callback=self.parse_dir_contents, meta={'url':i})
 
@@ -121,7 +128,7 @@ class LinioCat(scrapy.Spider):
 		descripcion = response.xpath('normalize-space(//div[@itemprop="description"] )').extract()
 		porcentaje = response.xpath('(//span[@class="discount"])[last()]/text()').extract()
 		stock = response.xpath('normalize-space(//button[@id="buy-now"][1]/text())').extract()
-		months = response.xpath('normalize-space(//*[@id="usp-menu"]/div/div/a[5]/span[2]/text())').extract()
+		#months = response.xpath('normalize-space(//*[@id="usp-menu"]/div/div/a[5]/span[2]/text())').extract()
 
 		ls = []
 		if data:
@@ -135,7 +142,7 @@ class LinioCat(scrapy.Spider):
 		loader.add_value("brand", ls[0]["brand"])
 		loader.add_value("image", ls[0]["small_image"])
 		
-		loader.add_value("months", months)
+		#loader.add_value("months", months)
 		loader.add_value("link", response.meta.get('url'))
 		loader.add_value("stock", stock)
 		loader.add_value("discount", ls[0]["special_price"])
