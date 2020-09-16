@@ -14,9 +14,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 
 def getFecha():
-	#Traemos la fecha
 	x = datetime.now()
-
 	dia = str(x.strftime("%d"))
 	mes = str(x.strftime("%m"))
 	anio = str(x.year)
@@ -24,13 +22,10 @@ def getFecha():
 	return dia + '_' + mes + '_' + anio
 
 def getName(count):
-	#Traemos la fecha
 	x = datetime.now()
-
 	dia = str(x.strftime("%d"))
 	mes = str(x.strftime("%m"))
 	anio = str(x.year)
-	hora = str(x.strftime("%H"))
 
 	return 'sitemap.' + str(count) + '_'+ dia + '_' + mes + '_' + anio
 
@@ -143,7 +138,7 @@ class LinioCat(scrapy.Spider):
 		loader.add_value("image", ls[0]["small_image"])
 		
 		#loader.add_value("months", months)
-		loader.add_value("link", response.meta.get('url'))
+		loader.add_value("url", response.meta.get('url'))
 		loader.add_value("stock", stock)
 		loader.add_value("discount", ls[0]["special_price"])
 		loader.add_value("price", ls[0]["price"])

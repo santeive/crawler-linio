@@ -65,7 +65,8 @@ ROBOTSTXT_OBEY = True
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'linioCat.pipelines.LiniocatPipeline': 300,
+    'linioCat.pipelines.StoragePipeline': 100,
+    'linioCat.pipelines.LiniocatPipeline': 200,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

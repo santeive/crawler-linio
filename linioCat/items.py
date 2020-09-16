@@ -57,7 +57,7 @@ class LiniocatItem(scrapy.Item):
         input_processor=MapCompose(clean_image),
         output_processor=TakeFirst()
     )
-    link = scrapy.Field(
+    url = scrapy.Field(
         output_processor=TakeFirst()
     )
     stock = scrapy.Field(
