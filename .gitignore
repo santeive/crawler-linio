@@ -1,0 +1,5 @@
+xml_maps.py
+*.log
+*.pot
+*.pyc
+__pycache__/
