@@ -3,3 +3,6 @@ xml_maps.py
 *.pot
 *.pyc
 __pycache__/
+*.csv
+*.ipynb
+db.sqlite

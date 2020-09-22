@@ -17,12 +17,10 @@ def clean_category(clean_category):
     clean_category = clean_category.replace('/','|')
     return clean_category
 
-def clean_percentage(porcentaje):
-    if len(porcentaje) == 0:
-        porcentaje = "No aplica"
-    else:
-        porcentaje = re.findall(r'\d{1,3}', porcentaje)
-    return porcentaje
+def clean_percentage(ls):
+
+    porcentaje = 100 - ( (ls['special_price'])*(100)/(ls['price']) )
+    return int(porcentaje)
 
 def clean_image(image):
     image = 'http:'+ image
